@@ -1,5 +1,9 @@
 package main
 
+
+// TODO
+// a cli to manage db, intialize stuffs and so
+
 import (
   "fmt"
   "github.com/jinzhu/gorm"
