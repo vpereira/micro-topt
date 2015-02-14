@@ -1,7 +1,7 @@
 default: build
 
 clean:
-	rm -rf totp
+	rm -rf totp-cli
 
 build:
-	go build -o totp
+	go build -o totp-cli
