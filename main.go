@@ -4,7 +4,7 @@ import (
   "fmt"
   "github.com/jinzhu/gorm"
   _ "github.com/mattn/go-sqlite3"
-  "github.com/vpereira/micro-topt/backend"
+  "github.com/vpereira/micro-topt/models"
   )
 func main() {
   db, _ := gorm.Open("sqlite3", fmt.Sprintf("%s/users.db","db"))
@@ -13,11 +13,11 @@ func main() {
 
 
   // move to somewhere else, maybe lib or utils
-  pwd := backend.GetHash("foobarmar")
+  pwd := model.GetHash("foobarmar")
 
   // Create table
-  db.CreateTable(&backend.User{})
-    user := backend.User {
+  db.CreateTable(&model.User{})
+    user := model.User {
       Login: "foobar",
       Password:  pwd,
     }
