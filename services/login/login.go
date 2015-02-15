@@ -54,12 +54,16 @@ func main() {
       if db.Where(&model.User{Login: json.User, Password: pwd}).First(&user).RecordNotFound() {
         r.JSON(401,map[string]interface{}{"bad": "world"})
       } else {
-        r.JSON(200,map[string]interface{}{"hello": "world"})
         s.Set("userId",user.Id)
+        r.JSON(200,map[string]interface{}{"hello": "world"})
       }
     })
-    m.Get("/",RequireLogin,func(u *model.User) string {
-       return "Hello: " + u.Login
+    m.Get("/logout", func(s sessions.Session, r render.Render){
+      s.Delete("userId")
+      r.JSON(200,map[string]interface{}{"bye": "world"})
+      })
+    m.Get("/",RequireLogin,func(u *model.User, r render.Render){
+       r.JSON(200,map[string]interface{}{"hello": u.Login})
       })
 
     // Listen and serve it
