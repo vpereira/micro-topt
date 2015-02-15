@@ -33,10 +33,22 @@ func RequireLogin(rw http.ResponseWriter, req *http.Request,
       c.Map(user)
     }
 
+}
+
+func PostData(db *gorm.DB,json LoginJSON,r render.Render,s sessions.Session) {
+  // By this point, I assume that my own middleware took care of any errors
+  user := model.User{}
+  pwd := utils.GetHash(json.Password)
+  if db.Where(&model.User{Login: json.User, Password: pwd}).First(&user).RecordNotFound() {
+    r.JSON(401,map[string]interface{}{"bad": "world"})
+  } else {
+    s.Set("userId",user.Id)
+    r.JSON(200,map[string]interface{}{"hello": "world"})
   }
+}
 func main() {
     m := martini.Classic()
-    user := model.User{}
+
     m.Use(render.Renderer())
     // Sessions
     store := sessions.NewCookieStore([]byte("0xd34db33f"))
@@ -48,16 +60,7 @@ func main() {
     // curl -H "Content-Type: application/json" \
     // -X POST -d '{"user":"foobar","password":"foobarmar"}' \
     // http://localhost:8080/login
-    m.Post("/login", binding.Json(LoginJSON{}), binding.ErrorHandler, func(json LoginJSON,r render.Render,s sessions.Session) {
-      // By this point, I assume that my own middleware took care of any errors
-      pwd := utils.GetHash(json.Password)
-      if db.Where(&model.User{Login: json.User, Password: pwd}).First(&user).RecordNotFound() {
-        r.JSON(401,map[string]interface{}{"bad": "world"})
-      } else {
-        s.Set("userId",user.Id)
-        r.JSON(200,map[string]interface{}{"hello": "world"})
-      }
-    })
+    m.Post("/login", binding.Json(LoginJSON{}), binding.ErrorHandler, PostData)
     m.Get("/logout", func(s sessions.Session, r render.Render){
       s.Delete("userId")
       r.JSON(200,map[string]interface{}{"bye": "world"})
