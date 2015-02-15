@@ -13,7 +13,7 @@ func main() {
   // we gonna be using postgres, but for now sqlite3
   db,_ := utils.SetupDB("sqlite3", fmt.Sprintf("%s/users.db","db"))
 
-  // move to somewhere else, maybe lib or utils
+  // get a sha256 from the string
   pwd := utils.GetHash("foobarmar")
 
   // Create table
