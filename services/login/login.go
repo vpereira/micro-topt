@@ -1,7 +1,9 @@
 package main
 
 import (
-  "github.com/gin-gonic/gin"
+  "github.com/go-martini/martini"
+  "github.com/martini-contrib/binding"
+  "github.com/martini-contrib/render"
   )
 
 // Binding from JSON
@@ -10,23 +12,21 @@ type LoginJSON struct {
     Password string `json:"password" binding:"required"`
 }
 func main() {
-    r := gin.Default()
-
+    m := martini.Classic()
+    m.Use(render.Renderer())
     // Example for binding JSON ({"user": "manu", "password": "123"})
     // TODO
     // get the information from db
     // to test it:
     // curl -H "Content-Type: application/json"  -X POST -d '{"user":"foo","password":"123"}'  http://localhost:8080/login
-    r.POST("/login", func(c *gin.Context) {
-      var json LoginJSON
-
-      c.Bind(&json) // This will infer what binder to use depending on the content-type header.
-      if json.User == "foo" && json.Password == "123" {
-        c.JSON(200, gin.H{"status": "you are logged in"})
-      } else {
-          c.JSON(401, gin.H{"status": "unauthorized"})
+    m.Post("/login", binding.Json(LoginJSON{}), binding.ErrorHandler, func(json LoginJSON,r render.Render) {
+      // By this point, I assume that my own middleware took care of any errors
+      if json.User == "admin" && json.Password == "123" {
+        r.JSON(200,map[string]interface{}{"hello": "world"})
+      }else{
+        r.JSON(401,map[string]interface{}{"bad": "world"})
       }
     })
     // Listen and server on 0.0.0.0:8080
-    r.Run(":8080")
+    m.Run()
 }
