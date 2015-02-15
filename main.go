@@ -6,16 +6,12 @@ package main
 
 import (
   "fmt"
-  "github.com/jinzhu/gorm"
-  _ "github.com/mattn/go-sqlite3"
   "github.com/vpereira/micro-topt/models"
   "github.com/vpereira/micro-topt/libs/utils"
   )
 func main() {
-  db, _ := gorm.Open("sqlite3", fmt.Sprintf("%s/users.db","db"))
-  // Get database connection handle [*sql.DB](http://golang.org/pkg/database/sql/#DB)
-  db.DB()
-
+  // we gonna be using postgres, but for now sqlite3
+  db,_ := utils.SetupDB("sqlite3", fmt.Sprintf("%s/users.db","db"))
 
   // move to somewhere else, maybe lib or utils
   pwd := utils.GetHash("foobarmar")
